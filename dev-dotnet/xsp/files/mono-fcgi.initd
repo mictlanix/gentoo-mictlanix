@@ -1,0 +1,58 @@
+#!/sbin/runscript
+# Distributed under the terms of the GNU General Public License v2
+# $Id: mono-fcgi.initd,v 1.1 2009/01/18 17:44:04 loki_val Exp $
+
+PROGNAME=${SVCNAME/./-}
+WORKDIR=/run/aspnet
+LOGDIR=/var/log
+USER=aspnet
+GROUP=www-data
+
+depend() {
+	use net
+	after *
+}
+
+start() {
+        MONO_SERVER_OPTS="/socket=unix"
+        [ -z "$ServerSocket" ] && ServerSocket="$WORKDIR/$PROGNAME.sock"
+	MONO_SERVER_OPTS="$MONO_SERVER_OPTS /filename=$ServerSocket"
+        [ -z "$ServerLogLevels" ] && ServerLogLevels="Error"
+	MONO_SERVER_OPTS="$MONO_SERVER_OPTS /loglevels=$ServerLogLevels"
+        [ -z "$ServerLogFile" ] && ServerLogFile="$LOGDIR/$PROGNAME.log"
+	MONO_SERVER_OPTS="$MONO_SERVER_OPTS /logfile=$ServerLogFile"
+    	[ -z "$AppConfigFile" ] && AppConfigFile="/usr/lib/xsp/test/sample.webapp"
+	MONO_SERVER_OPTS="$MONO_SERVER_OPTS /appconfigfile=$AppConfigFile"
+	[ -z "$MonoOptions" ] && MonoOptions="--gc=sgen"
+        export MONO_ENV_OPTIONS=$MonoOptions
+	export MONO_IOMAP=all
+
+	ebegin "Starting $SVCNAME"
+
+        MONO_SERVER=$(which fastcgi-mono-server4)
+        mkdir -p $WORKDIR && chown $USER:$GROUP $WORKDIR
+	[ -e "$ServerSocket" ] && rm "$ServerSocket"
+
+	start-stop-daemon --start \
+		--background \
+	        --make-pidfile \
+		--pidfile $WORKDIR/$PROGNAME.pid \
+        	--user $USER \
+		--group $GROUP \
+		--exec $MONO_SERVER \
+		-- $MONO_SERVER_OPTS
+
+	while [ ! -S "$ServerSocket" ]; do sleep 1; done
+	chmod 775 "$ServerSocket"
+
+	eend $?
+}
+
+stop() {
+	ebegin "Stopping $SVCNAME"
+
+	start-stop-daemon --quiet --stop \
+		--pidfile $WORKDIR/$PROGNAME.pid
+
+	eend $?
+}

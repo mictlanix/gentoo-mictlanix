@@ -1,0 +1,30 @@
+--- a/mcs/class/System.ComponentModel.DataAnnotations/System.ComponentModel.DataAnnotations/DataTypeAttribute.cs
++++ b/mcs/class/System.ComponentModel.DataAnnotations/System.ComponentModel.DataAnnotations/DataTypeAttribute.cs
+@@ -50,6 +50,27 @@ namespace System.ComponentModel.DataAnnotations
+ 					displayFormat.ApplyFormatInEditMode = true;
+ 					displayFormat.ConvertEmptyStringToNull = true;
+ 					displayFormat.DataFormatString = "{0:t}";
++#if NET_4_0
++					displayFormat.HtmlEncode = true;
++#endif
++					break;
++				case DataType.Date:
++					displayFormat = new DisplayFormatAttribute ();
++					displayFormat.ApplyFormatInEditMode = true;
++					displayFormat.ConvertEmptyStringToNull = true;
++					displayFormat.DataFormatString = "{0:d}";
++#if NET_4_0
++					displayFormat.HtmlEncode = true;
++#endif
++					break;
++				case DataType.Currency:
++					displayFormat = new DisplayFormatAttribute ();
++					displayFormat.ApplyFormatInEditMode = false;
++					displayFormat.ConvertEmptyStringToNull = true;
++					displayFormat.DataFormatString = "{0:C}";
++#if NET_4_0
++					displayFormat.HtmlEncode = true;
++#endif
+ 					break;
+ 
+ 				default:

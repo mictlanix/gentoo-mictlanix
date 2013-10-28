@@ -1,0 +1,20 @@
+# Config file for /etc/init.d/mono-fcgi
+# $Id: mono-fcgi.confd,v 1.1 2009/01/18 17:44:04 loki_val Exp $
+
+# Unix socket for the server to listen on
+#ServerSocket=/run/aspnet/mono-fcgi.sock
+
+# Specifies what log levels to log. It can be any of the following values,
+# or multiple if comma separated: Debug, Notice, Warning, Error,
+# Standard (Notice,Warning,Error), All (Debug,Standard).
+#ServerLogLevels="Error"
+
+# Specifies a file to log events to.
+#ServerLogFile="/var/log/mono-fcgi.log"
+
+# Application definitions from the XML configuration file
+# AppConfigFile="/usr/lib/xsp/test/sample.webapp"
+
+# Flags to be set on MONO_ENV_OPTIONS
+#MonoOptions="--trace=N:nothing"
+
